@@ -1,0 +1,8 @@
+# app/pyproject.toml
+[project]
+name = "app"
+version = "1.0.0"
+dependencies = [
+  "core",
+  "appl"
+]
