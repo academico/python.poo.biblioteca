@@ -4,6 +4,7 @@ Dependencia do projeto APP:
   - 
   - 
   Como executar: no raiz do src  execute
+       pip install sqlalchemy
        pip install -e core
        pip install -e appl
        pip install -e app
@@ -14,12 +15,12 @@ Dependencia do projeto APP:
 from appl.dto.create_user_dto import CreateUserDTO
 from appl.services.user_service import UserService
 #from app.infra.repositories.user_repository_array import InMemoryUserRepository
-from app.infra.repositories.user_repository_sqlitemem import SqliteUserRepository
+from app.infra.repositories.user_repository_sqlitemem import SqlAlchemyUserRepository
 
 
 def main():
     #repository = InMemoryUserRepository()
-    repository = SqliteUserRepository()
+    repository = SqlAlchemyUserRepository()
     service = UserService(repository)
 
     print("== Criando usuários ==")

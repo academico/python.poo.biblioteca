@@ -107,6 +107,7 @@ src/
 ### Instalação em modo desenvolvimento
 
 ```bash
+pip install sqlalchemy
 pip install -e src/core
 pip install -e src/appl
 pip install -e src/app
