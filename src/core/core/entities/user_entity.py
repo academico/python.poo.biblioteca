@@ -1,4 +1,4 @@
-# core/entities/tb_users.py
+# core/entities/user_entity.py
 #  Isso substitui o CREATE TABLE manual
 # ✅ Não cria classes acopladas
 # ✅ Pode ser reutilizado por múltiplos repositórios
@@ -7,7 +7,7 @@ from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import declarative_base, relationship
 from core.entities.base import Base
 
-class User(Base):
+class UserEntity(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -15,4 +15,4 @@ class User(Base):
     email = Column(String, nullable=False)
 
     # Relacionamento: um usuário pode emprestar vários livros
-    books = relationship("Book", back_populates="user")
+    books = relationship("BookEntity", back_populates="user")
