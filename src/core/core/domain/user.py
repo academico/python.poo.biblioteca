@@ -6,8 +6,8 @@ class User:
             raise ValueError("Email inválido")
 
         self.id = id
-        self.name = name
-        self.email = email
+        self.name = name.strip()
+        self.email = email.strip()
 
     def __repr__(self) -> str:
         return f"User(id={self.id}, name='{self.name}', email='{self.email}')"

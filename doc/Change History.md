@@ -13,7 +13,6 @@
   | Menor suporte a tooling | Melhor tipagem e autocompletar |
    
 
-
   ✅ O que você ganhou com essa migração
 
   ✔ **Domínio 100% preservado**  
@@ -36,5 +35,12 @@
 
   ✔ **Escalabilidade futura**  
   O projeto fica pronto para evoluir para múltiplos repositórios, transações mais complexas ou até ORM, sem reescrever regras de negócio.
+  
+  <br>
+
+- **Issue #4**: adicionar outras entidades ao sistema
+
+  Livros, emprestimos, etc, bem como seus repositórios, tomando como modelo a entidade Users.
+   
 
 </details>
