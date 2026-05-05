@@ -1,48 +1,54 @@
-from sqlalchemy import insert, select
+# src/app/app/infra/repositories/sqlalchemy_user_repository.py
+
 from core.domain.user import User
-from core.entities.tb_users import users_table, metadata
-from core.repositories.user_repository import UserRepository
-from app.infra.db.abstract_sqlalchemy_repository import (
-    AbstractSqlAlchemyRepository,
-)
+from core.entities.user_entity import UserEntity
+from core.mappers.mapper import Mapper
+from core.repositories.user_repository import IUserRepository
+from app.infra.db.abstract_sqlalchemy_repository import AbstractSqlAlchemyRepository
 
-class SqlAlchemyUserRepository(
-    AbstractSqlAlchemyRepository, UserRepository
-):
 
-    def __init__(self):
-        super().__init__()
-        self._create_table()
-
-    def _create_table(self):
-        metadata.create_all(self.conn)
+class SqlAlchemyUserRepository(AbstractSqlAlchemyRepository, IUserRepository):
+    """
+    Implementação concreta de IUserRepository usando SQLAlchemy.
+    """
 
     def save(self, user: User) -> User:
-        stmt = insert(users_table).values(
-            name=user.name,
-            email=user.email,
-        )
+        entity = Mapper.to_entity(user, UserEntity)
+        self.session.add(entity)
+        self.session.commit()
+        # Após commit, o SQLAlchemy preenche o ID gerado
+        return Mapper.to_domain(entity, User)
 
-        result = self.conn.execute(stmt)
-        self.conn.commit()
-
-        user.id = result.inserted_primary_key[0]
-        return user
+    def update(self, user: User) -> User:
+        entity = self.session.get(UserEntity, user.id)
+        if not entity:
+            raise ValueError(f"User with id={user.id} not found")
+        # Atualiza os campos
+        entity.name = user.name
+        entity.email = user.email
+        self.session.commit()
+        return Mapper.to_domain(entity, User)
 
     def list_all(self) -> list[User]:
-        stmt = select(
-            users_table.c.id,
-            users_table.c.name,
-            users_table.c.email,
-        )
+        entities = self.session.query(UserEntity).all()
+        return [Mapper.to_domain(e, User) for e in entities]
 
-        result = self.conn.execute(stmt)
+    def get_by_id(self, id: int) -> User | None:
+        entity = self.session.get(UserEntity, id)
+        return Mapper.to_domain(entity, User) if entity else None
 
-        return [
-            User(
-                id=row.id,
-                name=row.name,
-                email=row.email,
-            )
-            for row in result.fetchall()
-        ]
+    def delete(self, id: int) -> None:
+        entity = self.session.get(UserEntity, id)
+        if entity:
+            self.session.delete(entity)
+            self.session.commit()
+
+    def exists(self, id: int) -> bool:
+        return self.session.query(UserEntity).filter_by(id=id).first() is not None
+
+    def count(self) -> int:
+        return self.session.query(UserEntity).count()
+
+    def find_by(self, **kwargs) -> list[User]:
+        entities = self.session.query(UserEntity).filter_by(**kwargs).all()
+        return [Mapper.to_domain(e, User) for e in entities]
