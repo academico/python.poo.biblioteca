@@ -2,7 +2,7 @@
 
 from core.domain.user import User
 from core.entities.user_entity import UserEntity
-from core.mappers.mapper import Mapper
+from core.mapper.mapper import Mapper
 from core.repositories.user_repository import IUserRepository
 from app.infra.db.abstract_sqlalchemy_repository import AbstractSqlAlchemyRepository
 

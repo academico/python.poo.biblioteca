@@ -1,14 +1,22 @@
 # app/main.py
 '''
+Projeto Bibliotca monorepo com três pacotes: app, appl e core.
+ - app:        infraestrutura e ponto de entrada da aplicação
+ - appl:       casos de uso e serviços de aplicação
+ - core:       regras de negócio e contratos
+ - biblioteca: ponto de entrada da aplicação, ou seja, execução 
+               da main
+
+Podemos usar `poetry` para gerenciar as dependências e o projeto:
+poetry init    -  para criar o projeto na raiz do repostiório
+poetry add     -  para adicionar as dependências.
+poetry install -  para instalar as dependências.
+poetry run <script_nome> - onde script_nome é nome na 
+   seção [project.scripts] do pyproject.toml
+          ex.: poetry run biblioteca
+
+
 Exemplo de uso dos serviços de Usuário e Livro em um sistema básico de biblioteca.
-
-Como executar: no raiz do src execute
-       pip install sqlalchemy
-       pip install -e core
-       pip install -e appl
-       pip install -e app
-
-       python src/app/app/main.py
 '''
 
 from appl.dto.create_user_dto import CreateUserDTO
@@ -23,7 +31,6 @@ from appl.services.book_service import BookService
 
 from app.infra.repositories.sqlalchemy_user_repository import SqlAlchemyUserRepository
 from app.infra.repositories.sqlalchemy_book_repository import SqlAlchemyBookRepository
-
 
 def main():
     # Inicializa repositórios
@@ -70,8 +77,8 @@ def main():
         print(book)
 
 
-if __name__ == "__main__":
-    main()
+#if __name__ == "__main__":
+#    main()
 
 # - Adicionar menu ao modulo main:
 #   1. Cadastrar Usuarios

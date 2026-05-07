@@ -10,7 +10,7 @@ class IBaseRepository(ABC, Generic[T]):
         """Cria ou atualiza um objeto no repositório."""
         pass
 
-     @abstractmethod
+    @abstractmethod
     def update(self, obj: T) -> T:
         """Atualiza um objeto existente no repositório."""
         pass

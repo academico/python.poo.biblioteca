@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "biblioteca"
+version = "1.1.0"
+description = "Gerenciamento de Biblioteca"
+authors = ["Walleria Aguiar"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.13"
+sqlalchemy = "^2.0"
+
+# Dependências locais em modo editável
+app = { path = "src/app", develop = true }
+appl = { path = "src/appl", develop = true }
+core = { path = "src/core", develop = true }
+
+#use para execução
+# poetry run biblioteca
+[tool.poetry.scripts]
+biblioteca = "biblioteca.program:main"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

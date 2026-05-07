@@ -35,10 +35,13 @@ class AbstractSqlAlchemyRepository(ABC):
                 bind=AbstractSqlAlchemyRepository._engine,
                 expire_on_commit=False
             )
+            # define self.conn antes
+            self.conn = AbstractSqlAlchemyRepository._connection
+            self.session = AbstractSqlAlchemyRepository._Session()
             self._initialize_database()
-
-        self.conn = AbstractSqlAlchemyRepository._connection
-        self.session = AbstractSqlAlchemyRepository._Session()
+        else:
+            self.conn = AbstractSqlAlchemyRepository._connection
+            self.session = AbstractSqlAlchemyRepository._Session()
 
     def _initialize_database(self):
         """

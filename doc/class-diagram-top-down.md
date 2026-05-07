@@ -1,0 +1,242 @@
+# Diagrama de classes — python.poo.biblioteca
+
+Diagrama em estilo **top-down** (`direction TB`): no topo está o **composition root** equivalente ao `app/app/main.py` (`MainPy`), seguido pela camada de aplicação (serviços e DTOs), contratos de repositório, implementações de infraestrutura, mapper, domínio e entidades ORM.
+
+Visualização: qualquer preview Markdown que suporte **Mermaid** (GitHub, GitLab, VS Code/Cursor com extensão, Obsidian, etc.).
+
+Fonte equivalente em arquivo `.mmd`: `doc/diagrams/class-diagram-top-down.mmd`.
+
+```mermaid
+classDiagram
+direction TB
+
+%% ========= Camada App — composition root =========
+class "<<composition root>>\napp/app/main.py" as MainPy {
+  +main()
+}
+
+%% ========= Appl — casos de uso =========
+class UserService {
+  -user_repository IUserRepository
+  -book_repository IBookRepository
+  +create_user(CreateUserDTO) User
+  +update_user(UpdateUserDTO) User
+  +list_users() User[]
+  +get_user_by_id(int) User
+  +delete_user(int) void
+  +count_users() int
+  +find_users_by_name(str) User[]
+  +find_users_by_email(str) User[]
+  +borrow_book(BorrowBookDTO) Book
+  +return_book(ReturnBookDTO) Book
+}
+
+class BookService {
+  -book_repository IBookRepository
+  -user_repository IUserRepository
+  +create_book(CreateBookDTO) Book
+  +update_book(UpdateBookDTO) Book
+  +list_books() Book[]
+  +get_book_by_id(int) Book
+  +delete_book(int) void
+  +count_books() int
+  +find_books_by_author(str) Book[]
+  +find_books_by_title(str) Book[]
+}
+
+class CreateUserDTO {
+  +name str
+  +email str
+}
+
+class UpdateUserDTO {
+  +id int
+  +name str
+  +email str
+}
+
+class BorrowBookDTO {
+  +user_id int
+  +book_id int
+}
+
+class ReturnBookDTO {
+  +user_id int
+  +book_id int
+}
+
+class CreateBookDTO {
+  +title str
+  +author str
+  +isbn str
+  +user_id int
+}
+
+class UpdateBookDTO {
+  +id int
+  +title str
+  +author str
+  +isbn str
+  +user_id int
+}
+
+%% ========= Core — contratos =========
+class "IBaseRepository~T~" {
+  <<interface>>
+  +save(T) T
+  +update(T) T
+  +list_all() T[]
+  +get_by_id(int) T
+  +delete(int) void
+  +exists(int) bool
+  +count() int
+  +find_by(**kwargs) T[]
+}
+
+class IUserRepository {
+  <<interface>>
+}
+
+class IBookRepository {
+  <<interface>>
+}
+
+IBaseRepository~T~ <|-- IUserRepository
+IBaseRepository~T~ <|-- IBookRepository
+
+%% ========= App — infra =========
+class AbstractSqlAlchemyRepository {
+  <<abstract>>
+  +session
+  +conn
+}
+
+class SqlAlchemyUserRepository {
+  +save(User) User
+  +update(User) User
+  +list_all() User[]
+  +get_by_id(int) User
+  +delete(int) void
+  +exists(int) bool
+  +count() int
+  +find_by(**kwargs) User[]
+}
+
+class SqlAlchemyBookRepository {
+  +save(Book) Book
+  +update(Book) Book
+  +list_all() Book[]
+  +get_by_id(int) Book
+  +delete(int) void
+  +exists(int) bool
+  +count() int
+  +find_by(**kwargs) Book[]
+}
+
+class InMemoryUserRepository {
+  +save(User) User
+  +update(User) User
+  +list_all() User[]
+  +get_by_id(int) User
+  +delete(int) void
+  +exists(int) bool
+  +count() int
+  +find_by(**kwargs) User[]
+}
+
+AbstractSqlAlchemyRepository <|-- SqlAlchemyUserRepository
+AbstractSqlAlchemyRepository <|-- SqlAlchemyBookRepository
+IUserRepository <|.. SqlAlchemyUserRepository
+IBookRepository <|.. SqlAlchemyBookRepository
+IUserRepository <|.. InMemoryUserRepository
+
+%% ========= Core — mapper =========
+class Mapper {
+  <<utility>>
+  +asdict(obj)$ dict
+  +from_dict(cls, data)$ instance
+  +to_domain(entity, domain_cls)$ domain
+  +to_entity(domain, entity_cls)$ entity
+}
+
+SqlAlchemyUserRepository ..> Mapper : usa
+SqlAlchemyBookRepository ..> Mapper : usa
+
+%% ========= Core — domínio =========
+class User {
+  +id int
+  +name str
+  +email str
+}
+
+class Book {
+  +id int
+  +title str
+  +author str
+  +isbn str
+  +user_id int
+  +is_valid_isbn(isbn)$ bool
+}
+
+%% ========= Core — ORM =========
+class ORMBase {
+  <<SQLAlchemy declarative_base>>
+}
+
+class UserEntity {
+  +id
+  +name
+  +email
+  +books
+}
+
+class BookEntity {
+  +id
+  +title
+  +author
+  +isbn
+  +user_id
+  +user
+}
+
+ORMBase <|-- UserEntity
+ORMBase <|-- BookEntity
+UserEntity "1" o-- "0..*" BookEntity : books
+BookEntity --> UserEntity : user
+
+SqlAlchemyUserRepository ..> UserEntity
+SqlAlchemyBookRepository ..> BookEntity
+Mapper ..> User : to_domain / from_entity
+Mapper ..> Book : to_domain / from_entity
+
+%% ========= Fluxo top-down: main → appl =========
+MainPy --> SqlAlchemyUserRepository : instancia
+MainPy --> SqlAlchemyBookRepository : instancia
+MainPy --> UserService : instancia
+MainPy --> BookService : instancia
+MainPy ..> CreateUserDTO : usa
+MainPy ..> CreateBookDTO : usa
+MainPy ..> BorrowBookDTO : usa
+MainPy ..> ReturnBookDTO : usa
+
+UserService --> IUserRepository : user_repository
+UserService --> IBookRepository : book_repository
+BookService --> IBookRepository : book_repository
+BookService --> IUserRepository : user_repository
+
+UserService ..> CreateUserDTO
+UserService ..> UpdateUserDTO
+UserService ..> BorrowBookDTO
+UserService ..> ReturnBookDTO
+UserService ..> User
+UserService ..> Book
+
+BookService ..> CreateBookDTO
+BookService ..> UpdateBookDTO
+BookService ..> Book
+
+IUserRepository ..> User : T = User
+IBookRepository ..> Book : T = Book
+
+User "1" <-- "0..*" Book : user_id opcional
+```
