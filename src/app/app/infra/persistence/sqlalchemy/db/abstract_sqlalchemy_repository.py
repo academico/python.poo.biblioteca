@@ -14,7 +14,8 @@ from abc import ABC
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine, Connection
 from sqlalchemy.orm import sessionmaker
-from core.entities.base import Base  # importa Base reponsável pelos relacionamentos entre as entidades
+from app.infra.persistence.sqlalchemy.entities.base import Base
+# importa Base reponsável pelos relacionamentos entre as entidades
 
 class AbstractSqlAlchemyRepository(ABC):
     _engine: Engine | None = None

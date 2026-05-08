@@ -1,11 +1,10 @@
 # src/app/app/infra/repositories/book_repository_sqlitemem.py
 
 from core.domain.book import Book
-from core.entities.book_entity import BookEntity
-from core.mapper.mapper import Mapper
 from core.repositories.book_repository import IBookRepository
-from app.infra.db.abstract_sqlalchemy_repository import AbstractSqlAlchemyRepository
-
+from app.infra.persistence.common.mapper.mapper import Mapper
+from app.infra.persistence.sqlalchemy.entities.book_entity import BookEntity
+from app.infra.persistence.sqlalchemy.db.abstract_sqlalchemy_repository import AbstractSqlAlchemyRepository
 
 class SqlAlchemyBookRepository(AbstractSqlAlchemyRepository, IBookRepository):
     """

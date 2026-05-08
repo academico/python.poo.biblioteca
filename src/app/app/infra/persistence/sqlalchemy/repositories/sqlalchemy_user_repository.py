@@ -1,11 +1,10 @@
 # src/app/app/infra/repositories/sqlalchemy_user_repository.py
 
 from core.domain.user import User
-from core.entities.user_entity import UserEntity
-from core.mapper.mapper import Mapper
 from core.repositories.user_repository import IUserRepository
-from app.infra.db.abstract_sqlalchemy_repository import AbstractSqlAlchemyRepository
-
+from app.infra.persistence.common.mapper.mapper import Mapper
+from app.infra.persistence.sqlalchemy.entities.user_entity import UserEntity
+from app.infra.persistence.sqlalchemy.db.abstract_sqlalchemy_repository import AbstractSqlAlchemyRepository
 
 class SqlAlchemyUserRepository(AbstractSqlAlchemyRepository, IUserRepository):
     """

@@ -29,8 +29,8 @@ from appl.dto.return_book_dto import ReturnBookDTO
 from appl.services.user_service import UserService
 from appl.services.book_service import BookService
 
-from app.infra.repositories.sqlalchemy_user_repository import SqlAlchemyUserRepository
-from app.infra.repositories.sqlalchemy_book_repository import SqlAlchemyBookRepository
+from app.infra.persistence.sqlalchemy.repositories.sqlalchemy_user_repository import SqlAlchemyUserRepository
+from app.infra.persistence.sqlalchemy.repositories.sqlalchemy_book_repository import SqlAlchemyBookRepository
 
 def main():
     # Inicializa repositórios

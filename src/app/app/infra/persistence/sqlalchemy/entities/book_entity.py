@@ -1,7 +1,7 @@
 # core/entities/book_entity.py
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
-from core.entities.base import Base  # Importa o mesmo Base 
+from .base import Base  # Importa o mesmo Base 
 
 class BookEntity(Base):
     __tablename__ = "books"
