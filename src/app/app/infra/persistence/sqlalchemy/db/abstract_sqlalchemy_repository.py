@@ -1,52 +1,52 @@
 
 # -------------------------------------------------------------------------------
-# app/infra/db/abstract_sqlalchemy_repository.py
-# Substituímos sqlite3.connect por SQLAlchemy Engine, mantendo sua ideia original:
-# ✅ cria a conexão uma única vez
-# ✅ reutiliza nas implementações
-# ✅ ainda funciona com ':memory:'
-#
-# Com isso:
-# ✅ Mantém exatamente a filosofia da sua implementação atual
-# ✅ Troca apenas o backend
+# Base de repositórios SQLAlchemy: cada instância recebe uma Session explícita.
+# Não há engine/sessão singleton em nível de classe → adequado para testes
+# paralelos (pytest-xdist) e múltiplas URLs/configs por processo.
 # -------------------------------------------------------------------------------
 from abc import ABC
+
 from sqlalchemy import create_engine
-from sqlalchemy.engine import Engine, Connection
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.engine import Engine
+from sqlalchemy.orm import Session
+
 from app.infra.persistence.sqlalchemy.entities.base import Base
-# importa Base reponsável pelos relacionamentos entre as entidades
+from app.infra.persistence.sqlalchemy.entities import book_entity  # noqa: F401
+from app.infra.persistence.sqlalchemy.entities import user_entity  # noqa: F401
+
+
+def init_sqlalchemy_schema(engine: Engine) -> None:
+    with engine.connect() as conn:
+        conn.exec_driver_sql("PRAGMA foreign_keys = ON")
+        conn.commit()
+    Base.metadata.create_all(engine)
+
+
+
+#- Exemplos de conexão com outros bancos:
+#  sqlite file:  database_url="sqlite+pysqlite:///./data/biblioteca.db"
+#  postgres:     database_url="postgresql+psycopg://usuario:senha@localhost:5432/biblioteca",echo=False, pool_size=5, max_overflow=10,
+#                (requer driver: poetry add psycopg[binary])
+def bootstrap_engine_session(
+    database_url: str = "sqlite+pysqlite:///:memory:",
+    *,
+    echo: bool = False,
+    **engine_kwargs,
+) -> tuple[Engine, Session]:
+    """
+    Cria engine + sessão únicos e aplica o schema declarado em Base.
+
+    Um processo pode chamar esta função quantas vezes quiser (p.ex. uma por
+    teste); feche sempre com ``session.close()`` e ``engine.dispose()``.
+    """
+    engine = create_engine(database_url, echo=echo, **engine_kwargs)
+    init_sqlalchemy_schema(engine)
+    session = Session(engine, expire_on_commit=False)
+    return engine, session
+
 
 class AbstractSqlAlchemyRepository(ABC):
-    _engine: Engine | None = None
-    _connection: Connection | None = None
-    _Session = None
+    """Repositório que opera sempre sobre uma Session injetada."""
 
-    def __init__(self):
-        if AbstractSqlAlchemyRepository._engine is None:
-            AbstractSqlAlchemyRepository._engine = create_engine(
-                "sqlite:///:memory:",
-                echo=False,
-                future=True,
-            )
-            AbstractSqlAlchemyRepository._connection = (
-                AbstractSqlAlchemyRepository._engine.connect()
-            )
-            AbstractSqlAlchemyRepository._Session = sessionmaker(
-                bind=AbstractSqlAlchemyRepository._engine,
-                expire_on_commit=False
-            )
-            # define self.conn antes
-            self.conn = AbstractSqlAlchemyRepository._connection
-            self.session = AbstractSqlAlchemyRepository._Session()
-            self._initialize_database()
-        else:
-            self.conn = AbstractSqlAlchemyRepository._connection
-            self.session = AbstractSqlAlchemyRepository._Session()
-
-    def _initialize_database(self):
-        """
-        Inicializações globais (PRAGMA, metadata.create_all etc.)
-        """
-        self.conn.exec_driver_sql("PRAGMA foreign_keys = ON")
-        Base.metadata.create_all(AbstractSqlAlchemyRepository._engine)
+    def __init__(self, session: Session) -> None:
+        self.session = session
