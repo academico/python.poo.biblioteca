@@ -18,7 +18,7 @@ poetry run <script_nome> - onde script_nome é nome na
 
 Exemplo de uso dos serviços de Usuário e Livro em um sistema básico de biblioteca.
 '''
-
+import os
 from appl.dto.create_user_dto import CreateUserDTO
 from appl.dto.update_user_dto import UpdateUserDTO
 from appl.dto.create_book_dto import CreateBookDTO
@@ -29,13 +29,24 @@ from appl.dto.return_book_dto import ReturnBookDTO
 from appl.services.user_service import UserService
 from appl.services.book_service import BookService
 
-from app.infra.repositories.sqlalchemy_user_repository import SqlAlchemyUserRepository
-from app.infra.repositories.sqlalchemy_book_repository import SqlAlchemyBookRepository
+from app.infra.persistence.sqlalchemy.repositories.sqlalchemy_user_repository import SqlAlchemyUserRepository
+from app.infra.persistence.sqlalchemy.repositories.sqlalchemy_book_repository import SqlAlchemyBookRepository
+from app.infra.persistence.sqlalchemy.db.abstract_sqlalchemy_repository import bootstrap_engine_session
 
 def main():
-    # Inicializa repositórios
-    user_repo = SqlAlchemyUserRepository()
-    book_repo = SqlAlchemyBookRepository()
+    url = os.getenv("BIBLIOTECA_DB", "sqlite+pysqlite:///:memory:")
+    engine, session = bootstrap_engine_session(url)
+    try:
+        # Mesma sessão nos dois repositórios mantém uma única unit of work SQLite
+        user_repo = SqlAlchemyUserRepository(session)
+        book_repo = SqlAlchemyBookRepository(session)
+        _run_demo(user_repo, book_repo)
+    finally:
+        session.close()
+        engine.dispose()
+
+
+def _run_demo(user_repo: SqlAlchemyUserRepository, book_repo: SqlAlchemyBookRepository) -> None:
 
     # Inicializa serviços
     user_service = UserService(user_repo, book_repo)

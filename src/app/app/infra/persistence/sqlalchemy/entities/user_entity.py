@@ -5,7 +5,7 @@
 
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import declarative_base, relationship
-from core.entities.base import Base
+from .base import Base
 
 class UserEntity(Base):
     __tablename__ = "users"

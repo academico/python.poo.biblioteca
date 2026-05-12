@@ -1,16 +1,20 @@
 # src/app/app/infra/repositories/sqlalchemy_user_repository.py
 
-from core.domain.user import User
-from core.entities.user_entity import UserEntity
-from core.mapper.mapper import Mapper
-from core.repositories.user_repository import IUserRepository
-from app.infra.db.abstract_sqlalchemy_repository import AbstractSqlAlchemyRepository
+from sqlalchemy.orm import Session
 
+from core.domain.user import User
+from core.repositories.user_repository import IUserRepository
+from app.infra.persistence.common.mapper.mapper import Mapper
+from app.infra.persistence.sqlalchemy.entities.user_entity import UserEntity
+from app.infra.persistence.sqlalchemy.db.abstract_sqlalchemy_repository import AbstractSqlAlchemyRepository
 
 class SqlAlchemyUserRepository(AbstractSqlAlchemyRepository, IUserRepository):
     """
     Implementação concreta de IUserRepository usando SQLAlchemy.
     """
+
+    def __init__(self, session: Session) -> None:
+        super().__init__(session)
 
     def save(self, user: User) -> User:
         entity = Mapper.to_entity(user, UserEntity)

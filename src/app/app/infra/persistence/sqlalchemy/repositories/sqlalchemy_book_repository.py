@@ -1,16 +1,20 @@
 # src/app/app/infra/repositories/book_repository_sqlitemem.py
 
-from core.domain.book import Book
-from core.entities.book_entity import BookEntity
-from core.mapper.mapper import Mapper
-from core.repositories.book_repository import IBookRepository
-from app.infra.db.abstract_sqlalchemy_repository import AbstractSqlAlchemyRepository
+from sqlalchemy.orm import Session
 
+from core.domain.book import Book
+from core.repositories.book_repository import IBookRepository
+from app.infra.persistence.common.mapper.mapper import Mapper
+from app.infra.persistence.sqlalchemy.entities.book_entity import BookEntity
+from app.infra.persistence.sqlalchemy.db.abstract_sqlalchemy_repository import AbstractSqlAlchemyRepository
 
 class SqlAlchemyBookRepository(AbstractSqlAlchemyRepository, IBookRepository):
     """
     Implementação concreta de IBookRepository usando SQLAlchemy.
     """
+
+    def __init__(self, session: Session) -> None:
+        super().__init__(session)
 
     def save(self, book: Book) -> Book:
         entity = Mapper.to_entity(book, BookEntity)
@@ -27,6 +31,7 @@ class SqlAlchemyBookRepository(AbstractSqlAlchemyRepository, IBookRepository):
         entity.title = book.title
         entity.author = book.author
         entity.isbn = book.isbn
+        entity.user_id = book.user_id
         self.session.commit()
         return Mapper.to_domain(entity, Book)
 

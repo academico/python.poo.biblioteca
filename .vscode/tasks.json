@@ -1,0 +1,23 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Poetry run biblioteca",
+        "type": "shell",
+        "command": "poetry",
+        "args": ["run", "biblioteca"],
+        "options": {
+          "cwd": "${workspaceFolder}",
+          "env": {
+            "BIBLIOTECA_DB": "sqlite+pysqlite:///./db/biblioteca.db"
+          }},
+
+          "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "problemMatcher": []
+      }
+    ]
+  }
+  

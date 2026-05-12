@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Biblioteca: CLI (program.py)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/biblioteca/program.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
+      "name": "Biblioteca: módulo biblioteca.program",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "biblioteca.program",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true
+    }
+  ]
+}
