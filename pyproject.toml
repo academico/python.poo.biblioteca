@@ -8,6 +8,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = ">=3.13"
 sqlalchemy = "^2.0"
+rich = "^15.0.0"
 
 # Dependências locais em modo editável
 app = { path = "src/app", develop = true }
@@ -16,6 +17,7 @@ core = { path = "src/core", develop = true }
 
 #use para execução
 # poetry run biblioteca
+keyboard = "^0.13.5"
 [tool.poetry.scripts]
 biblioteca = "biblioteca.program:main"
 

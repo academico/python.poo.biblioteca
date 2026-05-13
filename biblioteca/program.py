@@ -7,6 +7,7 @@ def main():
     """Ponto de entrada da CLI Biblioteca."""
     # Aqui você pode adicionar lógica de roteamento de comandos,
     # mas para começar basta delegar para o main do app.
+   
     print("Iniciando sistema de Biblioteca...")
     try:
         app_main()

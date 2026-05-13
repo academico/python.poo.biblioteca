@@ -33,6 +33,8 @@ from app.infra.persistence.sqlalchemy.repositories.sqlalchemy_user_repository im
 from app.infra.persistence.sqlalchemy.repositories.sqlalchemy_book_repository import SqlAlchemyBookRepository
 from app.infra.persistence.sqlalchemy.db.abstract_sqlalchemy_repository import bootstrap_engine_session
 
+from app.cli.display import Display
+
 def main():
     url = os.getenv("BIBLIOTECA_DB", "sqlite+pysqlite:///:memory:")
     engine, session = bootstrap_engine_session(url)
@@ -51,7 +53,16 @@ def _run_demo(user_repo: SqlAlchemyUserRepository, book_repo: SqlAlchemyBookRepo
     # Inicializa serviços
     user_service = UserService(user_repo, book_repo)
     book_service = BookService(book_repo, user_repo)
+    cli = Display()
+    while True:
+       opcao = cli.Show()
 
+       if opcao.lower() == "sair":
+          break 
+    
+       ProcessService(opcao)
+
+    """
     print("== Cadastro de usuários ==")
     alice = user_service.create_user(CreateUserDTO("Alice", "alice@email.com"))
     bob = user_service.create_user(CreateUserDTO("Bob", "bob@email.com"))
@@ -86,6 +97,7 @@ def _run_demo(user_repo: SqlAlchemyUserRepository, book_repo: SqlAlchemyBookRepo
     print("\n== Consulta final de livros ==")
     for book in book_service.list_books():
         print(book)
+    """
 
 
 #if __name__ == "__main__":
