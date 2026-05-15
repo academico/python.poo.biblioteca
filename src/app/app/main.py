@@ -22,14 +22,6 @@ from startup import Startup
 from app.cli.display import Display
 from cli.views.manager_view import ManagerView
 
-from appl.appl.dto.create_user_dto import CreateUserDTO
-from appl.appl.dto.update_user_dto import UpdateUserDTO
-from appl.appl.dto.create_book_dto import CreateBookDTO
-from appl.appl.dto.update_book_dto import UpdateBookDTO
-from appl.appl.dto.borrow_book_dto import BorrowBookDTO
-from appl.appl.dto.return_book_dto import ReturnBookDTO
-
-
 def main():
     startup = Startup()
     try:

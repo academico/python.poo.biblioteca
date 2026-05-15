@@ -41,8 +41,8 @@ class Startup:
 
 
     def Cleanup(self):
-        session = self._service_provider.Get(Session)
-        engine = self._service_provider.Get(Engine)
+        session: Session = self._service_provider[Session]
+        engine: Engine = self._service_provider[Engine]
         if(session != None): session.close()
         if(engine != None): engine.dispose()
 

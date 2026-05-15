@@ -1,7 +1,7 @@
 # biblioteca/program.py
 
 import sys
-from app.main import main as app_main
+from app.app.main import main as app_main
 
 def main():
     """Ponto de entrada da CLI Biblioteca."""
