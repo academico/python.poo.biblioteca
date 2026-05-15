@@ -1,7 +1,7 @@
 # appl/services/book_service.py
-from core.domain.book import Book
-from core.repositories.book_repository import IBookRepository
-from core.repositories.user_repository import IUserRepository
+from core.core.domain.book import Book
+from core.core.repositories.book_repository import IBookRepository
+from core.core.repositories.user_repository import IUserRepository
 from appl.dto.create_book_dto import CreateBookDTO
 from appl.dto.update_book_dto import UpdateBookDTO
 
@@ -16,7 +16,7 @@ class BookService:
     def create_book(self, dto: CreateBookDTO) -> Book:
         if dto.user_id and not self.user_repository.exists(dto.user_id):
             raise ValueError(f"Usuário com id={dto.user_id} não encontrado")
-
+            
         book = Book(id=None, title=dto.title, author=dto.author, isbn=dto.isbn, user_id=dto.user_id)
         return self.book_repository.save(book)
 

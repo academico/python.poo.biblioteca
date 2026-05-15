@@ -18,49 +18,42 @@ poetry run <script_nome> - onde script_nome é nome na
 
 Exemplo de uso dos serviços de Usuário e Livro em um sistema básico de biblioteca.
 '''
-import os
-from appl.dto.create_user_dto import CreateUserDTO
-from appl.dto.update_user_dto import UpdateUserDTO
-from appl.dto.create_book_dto import CreateBookDTO
-from appl.dto.update_book_dto import UpdateBookDTO
-from appl.dto.borrow_book_dto import BorrowBookDTO
-from appl.dto.return_book_dto import ReturnBookDTO
-
-from appl.services.user_service import UserService
-from appl.services.book_service import BookService
-
-from app.infra.persistence.sqlalchemy.repositories.sqlalchemy_user_repository import SqlAlchemyUserRepository
-from app.infra.persistence.sqlalchemy.repositories.sqlalchemy_book_repository import SqlAlchemyBookRepository
-from app.infra.persistence.sqlalchemy.db.abstract_sqlalchemy_repository import bootstrap_engine_session
-
+from startup import Startup
 from app.cli.display import Display
+from cli.views.manager_view import ManagerView
+
+from appl.appl.dto.create_user_dto import CreateUserDTO
+from appl.appl.dto.update_user_dto import UpdateUserDTO
+from appl.appl.dto.create_book_dto import CreateBookDTO
+from appl.appl.dto.update_book_dto import UpdateBookDTO
+from appl.appl.dto.borrow_book_dto import BorrowBookDTO
+from appl.appl.dto.return_book_dto import ReturnBookDTO
+
 
 def main():
-    url = os.getenv("BIBLIOTECA_DB", "sqlite+pysqlite:///:memory:")
-    engine, session = bootstrap_engine_session(url)
+    startup = Startup()
     try:
-        # Mesma sessão nos dois repositórios mantém uma única unit of work SQLite
-        user_repo = SqlAlchemyUserRepository(session)
-        book_repo = SqlAlchemyBookRepository(session)
-        _run_demo(user_repo, book_repo)
+        startup.Initialize()
+        run()
     finally:
-        session.close()
-        engine.dispose()
+        startup.Cleanup()
 
 
-def _run_demo(user_repo: SqlAlchemyUserRepository, book_repo: SqlAlchemyBookRepository) -> None:
-
+def run() -> None:
     # Inicializa serviços
-    user_service = UserService(user_repo, book_repo)
-    book_service = BookService(book_repo, user_repo)
     cli = Display()
+    view = ManagerView()
+
     while True:
        opcao = cli.Show()
-
        if opcao.lower() == "sair":
           break 
-    
-       ProcessService(opcao)
+       view.Run(opcao)
+
+
+
+
+
 
     """
     print("== Cadastro de usuários ==")

@@ -1,8 +1,8 @@
 # appl/services/user_service.py
-from core.domain.user import User
-from core.domain.book import Book
-from core.repositories.user_repository import IUserRepository
-from core.repositories.book_repository import IBookRepository
+from core.core.domain.user import User
+from core.core.domain.book import Book
+from core.core.repositories.user_repository import IUserRepository
+from core.core.repositories.book_repository import IBookRepository
 from appl.dto.create_user_dto import CreateUserDTO
 from appl.dto.update_user_dto import UpdateUserDTO
 from appl.dto.borrow_book_dto import BorrowBookDTO
